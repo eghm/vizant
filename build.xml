@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.4 2002/07/23 16:51:11 nicolaken Exp $ -->
+<!-- $Id: build.xml,v 1.5 2002/07/23 17:45:12 nicolaken Exp $ -->
 <project name="Vizant" basedir="." default="main">
    <property name="src" location="src" />
    <property name="build" location="build" />
@@ -46,9 +46,33 @@
    </target>
 
    <target name="xml2formats">
-      <xslt in="${build}/buildgraph.xml" out="${build}/build.dot" style="xml2dot.xsl" />
-      <xslt in="${build}/buildgraph.xml" out="${build}/build.html" style="jar:file:/net/sourceforge/vizant/stylesheets/xml2html.xsl" />
-      <copy file="main.css" todir="build" />
+      <xslt in="${build}/buildgraph.xml" out="${build}/build.dot" style="src/stylesheets/xml2dot.xsl" />
+
+      <xslt in="${build}/buildgraph.xml" out="${build}/build.html" style="src/stylesheets/xml2html.xsl" />
+      <copy file="src/resources/main.css" todir="build" />
+
+      <xslt in="${build}/buildgraph.xml" out="${build}/buildtg.xml" style="src/stylesheets/xml2tg.xsl" />    
+      <copy file="${build}/buildtg.xml" tofile="${build}/InitialXML._xml"/>  
+      <copy todir="build">
+        <fileset dir="src/resources/tg" casesensitive="yes"/>
+      </copy>          
+   </target>
+
+
+   <target name="tg" depends="main">
+    <java classname="com.touchgraph.linkbrowser.TGLinkBrowser" fork="yes">
+     <arg value="${build}/buildtg.xml"/>
+     <classpath>
+       <path>
+          <fileset dir="lib" casesensitive="yes">
+           <patternset>
+             <include name="**/*.jar"/>
+             <include name="**/*.zip"/>
+           </patternset>
+         </fileset>  
+       </path> 
+     </classpath>
+      </java>
    </target>
 
    <target name="dot">

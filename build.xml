@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.2 2002/07/23 13:15:30 nicolaken Exp $ -->
+<!-- $Id: build.xml,v 1.3 2002/07/23 13:57:18 nicolaken Exp $ -->
 
 <project name="Vizant" basedir="." default="main">
 
@@ -8,7 +8,7 @@
 <property name="vizant.antfile" value="build.xml"/>
 <property name="dot.format" value="png"/>
 
-<target name="main" depends="jar,vizant,xml2dot,dot"/>
+<target name="main" depends="jar,vizant,xml2formats,dot"/>
 
 <target name="init">
 <tstamp/>
@@ -48,8 +48,10 @@
 <vizant antfile="${vizant.antfile}" outfile="${build}/buildgraph.xml" uniqueref="true"/>
 </target>
 
-<target name="xml2dot">
+<target name="xml2formats">
   <xslt in="${build}/buildgraph.xml" out="${build}/build.dot" style="xml2dot.xsl"/> 
+  <xslt in="${build}/buildgraph.xml" out="${build}/build.html" style="xml2html.xsl"/> 
+  <copy file="main.css" todir="build"/>  
 </target>
 
 <target name="dot">

@@ -1,12 +1,18 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.5 2002/07/23 17:45:12 nicolaken Exp $ -->
+<!-- $Id: build.xml,v 1.6 2002/07/23 18:14:59 nicolaken Exp $ -->
 <project name="Vizant" basedir="." default="main">
    <property name="src" location="src" />
    <property name="build" location="build" />
    <property name="vizant.antfile" value="build.xml" />
    <property name="dot.format" value="png" />
 
-   <target name="main" depends="jar,vizant,xml2formats,dot" />
+   <target name="main" depends="jar,vizant,xml2formats,dot" >
+     <echo>--------------------------------------------------------------</echo>
+     <echo> Build finished. Please open</echo>
+     <echo>      ${build}/index.html </echo>
+     <echo> in your browser to see the results.</echo>
+     <echo>--------------------------------------------------------------</echo>
+   </target>
 
    <target name="init">
       <tstamp />
@@ -49,22 +55,25 @@
       <xslt in="${build}/buildgraph.xml" out="${build}/build.dot" style="src/stylesheets/xml2dot.xsl" />
 
       <xslt in="${build}/buildgraph.xml" out="${build}/build.html" style="src/stylesheets/xml2html.xsl" />
-      <copy file="src/resources/main.css" todir="build" />
 
       <xslt in="${build}/buildgraph.xml" out="${build}/buildtg.xml" style="src/stylesheets/xml2tg.xsl" />    
       <copy file="${build}/buildtg.xml" tofile="${build}/InitialXML._xml"/>  
-      <copy todir="build">
+      <copy todir="${build}">
         <fileset dir="src/resources/tg" casesensitive="yes"/>
       </copy>          
+
+      <copy todir="${build}">
+        <fileset dir="src/resources" casesensitive="yes"/>
+      </copy>      
    </target>
 
 
-   <target name="tg" depends="main">
+   <target name="tg">
     <java classname="com.touchgraph.linkbrowser.TGLinkBrowser" fork="yes">
      <arg value="${build}/buildtg.xml"/>
      <classpath>
        <path>
-          <fileset dir="lib" casesensitive="yes">
+          <fileset dir="build" casesensitive="yes">
            <patternset>
              <include name="**/*.jar"/>
              <include name="**/*.zip"/>

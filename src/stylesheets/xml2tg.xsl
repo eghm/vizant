@@ -61,11 +61,11 @@
             </NODE_LABEL>
             
             <NODE_URL url="" urlIsLocal="false" urlIsXML="false"/>
-            <NODE_HINT width="150" height="-1" isHTML="false"><!-- the description -->
+            <NODE_HINT width="150" height="-1" isHTML="false">
               <xsl:attribute name="hint">subgraph:cluster:<xsl:value-of select="@numcluster"/>:<xsl:value-of select="@label"/></xsl:attribute>
             </NODE_HINT>
-        </NODE>        	    
-        <!-- <xsl:apply-templates /> --> 	     
+        </NODE>        	  
+        <xsl:apply-templates />  	     
 	</xsl:template>
    
 </xsl:stylesheet>

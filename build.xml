@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!-- $Id: build.xml,v 1.1 2002/07/22 15:06:44 koseki Exp $ -->
+
+<project name="Vizant" basedir="." default="main">
+
+<property name="src" location="src"/>
+<property name="build" location="build"/>
+<property name="vizant.antfile" value="build.xml"/>
+<property name="dot.format" value="png"/>
+
+<target name="main" depends="jar,vizant,dot"/>
+
+<target name="init">
+<tstamp/>
+<mkdir dir="${build}/classes"/>
+</target>
+
+<target name="build" depends="init" >
+<javac srcdir="${src}" destdir="${build}/classes"
+ includes="net/sourceforge/vizant/*.java"/>
+</target>
+
+<target name="buildtest" depends="build" >
+<javac srcdir="${src}" destdir="${build}/classes"
+ includes="testcases/*.java"/>
+</target>
+
+<target name="test" depends="buildtest">
+<junit printsummary="yes" fork="yes" haltonfailure="yes">
+<classpath>
+<pathelement location="${build}/classes" />
+</classpath>
+<batchtest fork="yes">
+<formatter type="plain" usefile="false"/>
+<fileset dir="${testsrc}">
+<include name="**/*Test*.java" />
+<exclude name="**/AllTests.java" />
+</fileset>
+</batchtest>
+</junit>
+</target>
+
+<target name="defvizant">
+<taskdef name="vizant" classname="net.sourceforge.vizant.Vizant" classpath="build/vizant.jar"/>
+</target>
+
+<target name="vizant" depends="defvizant">
+<vizant antfile="${vizant.antfile}" outfile="${build}/build.dot" uniqueref="true"/>
+</target>
+
+<target name="dot">
+<exec executable="dot" >
+<arg line="-T${dot.format} ${build}/build.dot -o ${build}/out.${dot.format}"/>
+</exec>
+</target>
+
+<target name="jar" depends="build">
+<jar jarfile="${build}/vizant.jar" basedir="${build}/classes"/>
+</target>
+
+<target name="clean">
+<delete dir="${build}"/>
+<delete verbose="true">
+<fileset dir="." defaultexcludes="no">
+<include name="**/*~" />
+</fileset>
+</delete>
+</target>
+
+</project>

@@ -1,0 +1,90 @@
+digraph "G" {
+    graph ["rankdir"="LR",];
+    "prepare";
+    "tomcat.jar";
+    "tomcat.jar" -> "tomcat_modules";
+    "commons-prepare";
+    "commons-prepare" -> "prepare";
+    "tomcat_modules";
+    "tomcat_modules" -> "commons-prepare";
+    "tomcat-jars";
+    "tomcat-jars" -> "prepare";
+    "tomcat-jars" -> "tomcat_modules";
+    "tomcat-jars" -> "tomcat.jar";
+    "tomcat-jars-new";
+    "tomcat-jars-new" -> "tomcat-jars";
+    "webapps";
+    "webapps" -> "prepare";
+    "tests";
+    "tests" -> "main";
+    "tests.dist";
+    "tests.dist" -> "tests";
+    "watchdog.dist";
+    "watchdog.dist" -> "tests";
+    "dist";
+    "dist" -> "dist.prepare";
+    "dist" -> "javadoc";
+    "dist" -> "dist.war";
+    "dist.prepare";
+    "dist.prepare" -> "main";
+    "dist.prepare" -> "webapps";
+    "dist.prepare" -> "tomcat-jars";
+    "javadoc";
+    "javadoc" -> "main";
+    "javadoc" -> "webapps";
+    "javadoc" -> "tomcat-jars";
+    "javadoc.tomcat";
+    "javadoc.tomcat" -> "main";
+    "javadoc.tomcat" -> "webapps";
+    "javadoc.tomcat" -> "tomcat-jars";
+    "javadoc.tomcat.core";
+    "javadoc.tomcat.core" -> "main";
+    "javadoc.tomcat.core" -> "webapps";
+    "javadoc.tomcat.core" -> "tomcat-jars";
+    "javadoc.tomcat.facade";
+    "javadoc.tomcat.facade" -> "main";
+    "javadoc.tomcat.facade" -> "webapps";
+    "javadoc.tomcat.facade" -> "tomcat-jars";
+    "javadoc.tomcat.modules";
+    "javadoc.tomcat.modules" -> "main";
+    "javadoc.tomcat.modules" -> "webapps";
+    "javadoc.tomcat.modules" -> "tomcat-jars";
+    "javadoc.tomcat.startup";
+    "javadoc.tomcat.startup" -> "main";
+    "javadoc.tomcat.startup" -> "webapps";
+    "javadoc.tomcat.startup" -> "tomcat-jars";
+    "javadoc.tomcat.util";
+    "javadoc.tomcat.util" -> "main";
+    "javadoc.tomcat.util" -> "webapps";
+    "javadoc.tomcat.util" -> "tomcat-jars";
+    "javadoc.jasper";
+    "javadoc.jasper" -> "main";
+    "javadoc.jasper" -> "webapps";
+    "javadoc.jasper" -> "tomcat-jars";
+    "dist.war";
+    "dist.war" -> "dist.prepare";
+    "dist.nojavadoc";
+    "dist.nojavadoc" -> "dist.war";
+    "dist-zip";
+    "dist-zip" -> "dist";
+    "main";
+    "main" -> "tomcat";
+    "main" -> "webapps";
+    "tomcat";
+    "tomcat" -> "prepare";
+    "tomcat" -> "tomcat-jars";
+    "all";
+    "all" -> "dist";
+    subgraph "cluster:1" {
+        "label"=" src/j2ee/build.xml";
+    }
+    subgraph "cluster:2" {
+        "label"=" src/tests/build.xml";
+    }
+    subgraph "cluster:3" {
+        "label"=" proposals/PasswordPrompter/build.xml";
+    }
+    subgraph "cluster:4" {
+        "label"=" proposals/StreamHandler/build.xml";
+    }
+}

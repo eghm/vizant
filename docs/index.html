@@ -1,0 +1,267 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=ISO8859-1">
+<title>Vizant - Ant task to visualize buildfile</title>
+<link rel="stylesheet" href="main.css" media="all">
+</head>
+<body>
+
+<h1>Vizant - Ant task to visualize buildfile</h1>
+
+<p class="updated">$Date: 2002/07/22 15:06:44 $ - [ English | Japanese | <a href="http://www.sourceforge.net/projects/vizant/">Project Site</a> ]</p>
+
+
+<h2>What's Vizant?</h2>
+
+<p>
+<a href="http://vizant.sourceforge.net/">Vizant</a> is an <a href="http://jakarta.apache.org/ant/" target="_blank">Apache Ant</a> task to create <a href="http://www.research.att.com/sw/tools/graphviz/" target="_blank">Graphviz</a> DOT source code from an Ant buildfile. The image created from the DOT source code shows the targets dependency.
+</P>
+
+<p>
+<ul>
+<li><a href="#examples">Examples</a></li>
+<li><a href="#download">Download</a></li>
+<li><a href="#usage">Usage</a>
+<ul>
+<li><a href="#parameters">Parameters</a></li>
+<li><a href="#nestedelements">Parameters specified as nested element</a></li>
+<li><a href="#examples">Examples</a></li>
+</ul>
+</li>
+<li><a href="#plan">Plan</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+
+<h2><a name="examples">Examples</a></h2>
+
+<p>The below graph was created from Ant1.5beta1 build.xml.<p>
+<p><a href="./examples/ant/1.png"><img src="./examples/ant/1s.png"></a></p>
+<p><a href="examples.html">More examples are available.</a></p>
+
+<h2><a name="download">Download</a></h2>
+
+<ul>
+<li>
+<a href="">vizant.jar (2002-06-18 15k)</a> - latest (0.1.0) jar
+</li>
+
+<li>
+<a href="http://prdownloads.sourceforge.net/vizant/vizant-0.1.0.zip?download">vizant-0.1.0.zip (2002-06-18 656k)</a> - includes jar, source, documents.
+</li>
+
+<li><a href="http://sourceforge.net/project/showfiles.php?group_id=57858">Change Logs</a></li>
+</ul>
+
+
+<p><strong>Note:</strong> There are no <a href="http://jakarta.apache.org/ant/manual/install.html#librarydependencies" target="_blank">library dependencies</a> in vizant task, but you will need <a href="http://www.research.att.com/sw/tools/graphviz/" target="_blank">Graphviz</a> dot command to create images.</p>
+
+<h2><a name="usage">Usage</a></h2>
+
+<h3><a name="parameters">Parameters</a></h3>
+
+<p>
+<table border="1" cellpadding="2" cellspacing="0">
+  <tr>
+    <td valign="top"><b>Attribute</b></td>
+    <td valign="top"><b>Description</b></td>
+    <td align="center" valign="top"><b>Required</b></td>
+  </tr>
+
+  <tr>
+    <td valign="top">antfile</td>
+    <td valign="top">the input Ant buildfile</td>
+    <td align="center" valign="top">Yes</td>
+  </tr>
+
+  <tr>
+    <td valign="top">outfile</td>
+    <td valign="top">the output DOT file</td>
+    <td align="center" valign="top">Yes</td>
+  </tr>
+
+  <tr>
+    <td valign="top">from</td>
+    <td valign="top">If the target name specified, cut down all blanches that the target doesn't depends on.</td>
+    <td align="center" valign="top">No</td>
+  </tr>
+
+  <tr>
+    <td valign="top">to</td>
+    <td valign="top">If the target name specified, cut down all blanches that the target isn't depended from.</td>
+    <td align="center" valign="top">No</td>
+  </tr>
+
+  <tr>
+    <td valign="top">nocluster</td>
+    <td valign="top">do not use cluster(outer rectangle) to show external buildfile</td>
+    <td align="center" valign="top">No, default is false</td>
+  </tr>
+
+  <tr>
+    <td valign="top">uniqueref</td>
+    <td valign="top">do not drow edge repeatedly when the &lt;ant&gt; or &lt;antcall&gt; task called more than once against the same target.</td>
+    <td align="center" valign="top">No, default is false</td>
+  </tr>
+
+  <tr>
+    <td valign="top">ignoreant</td>
+    <td valign="top">ignore all &lt;ant&gt; tasks</td>
+    <td align="center" valign="top">No, default is false</td>
+  </tr>
+
+  <tr>
+    <td valign="top">ignoreantcall</td>
+    <td valign="top">ignore all &lt;antcall&gt; tasks</td>
+    <td align="center" valign="top">No, default is false</td>
+  </tr>
+
+  <tr>
+    <td valign="top">ignoredepends</td>
+    <td valign="top">ignore all depends attributes</td>
+    <td align="center" valign="top">No, default is false</td>
+  </tr>
+
+</table>
+</p>
+
+<h3><a name="nestedelements">Parameters specified as nested element</a></h3>
+<h4>subgraph</h4>
+
+<p>Apply attributes only to subgraphs. Subgraph is used to represent external buildfile and targets.
+
+<p>
+<ul>
+<li>parent: &lt;vizant&gt;</li>
+<li>child: &lt;attrstmt&gt;</li>
+</ul>
+</p>
+
+<h4>attrstmt</h4>
+
+<p>&lt;attrstmt&gt; nested element represents <i>attr_stmt</i> nonterminal in <a href="http://www.research.att.com/~erg/graphviz/info/lang.html" target="_blank">the DOT language specification</a>. This element creates an group of attributes.</p>
+
+<p>
+<ul>
+<li>parent: &lt;vizant&gt; &lt;subgraph&gt;</li>
+<li>child: &lt;attr&gt;</li>
+</ul>
+</p>
+
+<p>
+<table border="1" cellpadding="2" cellspacing="0">
+  <tr>
+    <td valign="top"><b>Attribute</b></td>
+    <td valign="top"><b>Description</b></td>
+    <td align="center" valign="top"><b>Required</b></td>
+  </tr>
+
+  <tr>
+    <td valign="top">type</td>
+    <td valign="top">
+The value must be one of the
+<ul>
+<li>graph</li>
+<li>node</li>
+<li>edge</li>
+<li>node.default</li>
+<li>edge.ant</li>
+<li>edge.antcall</li>
+<li>edge.depends</li>
+</ul>
+</td>
+    <td align="center" valign="top">Yes</td>
+  </tr>
+
+</table>
+
+</p>
+
+<h4>attr</h4>
+
+
+
+<p>&lt;attr&gt; nested element represents a DOT attribute. You can get the complete <a href="http://www.research.att.com/~erg/graphviz/info/attrs.html" target="_blank">list of attributes</a> at the Graphviz site.</p>
+
+<p>
+<ul>
+<li>parent: &lt;attrstmt&gt;</li>
+<li>child: none</li>
+</ul>
+</p>
+
+<p>
+<table border="1" cellpadding="2" cellspacing="0">
+  <tr>
+    <td valign="top"><b>Attribute</b></td>
+    <td valign="top"><b>Description</b></td>
+    <td align="center" valign="top"><b>Required</b></td>
+  </tr>
+
+  <tr>
+    <td valign="top">name</td>
+    <td valign="top">the DOT attribute name.</td>
+    <td align="center" valign="top">Yes</td>
+  </tr>
+
+  <tr>
+    <td valign="top">value</td>
+    <td valign="top">the DOT attribute value.</td>
+    <td align="center" valign="top">Yes</td>
+  </tr>
+
+</table>
+</p>
+
+
+<h3><a name="examples">Examples</a></h3>
+
+<p>The most simple usage is like this.</p>
+
+<blockquote>
+&lt;vizant antfile="build.xml" outfile="build.dot"/&gt;<br>
+&lt;exec executable="dot" &gt;&lt;arg line="-Tpng build.dot -o build.png"/&gt;&lt;/exec&gt;
+</blockquote>
+
+
+<p>You can apply various DOT attributes using nested elements.</p>
+
+<blockquote>
+&lt;vizant antfile="build.xml" outfile="build.dot"&gt;<br>
+&nbsp;&nbsp;&lt;attrstmt type="node"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;attr name="style" value="filled"/&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;attr name="shape" value="egg"/&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;attr name="color" value="grey90"/&gt;<br>
+&nbsp;&nbsp;&lt;/attrstmt&gt;<br>
+&lt;/vizant&gt;<br>
+&lt;exec executable="dot" &gt;&lt;arg line="-Tsvg build.dot -o build.svg"/&gt;&lt;/exec&gt;<br>
+</blockquote>
+
+<p><a href="examples.html">And more.</a></p>
+
+<h2><a name="plan">Plan</a></h2>
+
+<ul>
+<li>The later version should be more flexible and be more easy to use.</li>
+<li>Support more than one format (DOT, HTML, GraphXML, etc.) using XSLT internally.</li>
+<li>Replace &lt;attr_stmt&gt; with XSLT parameter.</li>
+<li>Switch the node style when the target name starts with hyphen or has no description attribute.</li>
+<li>Support &lt;foreach&gt; tag.</li>
+</ul>
+
+<h2><a name="references">References</a></h2>
+
+<ul>
+<li><a href="http://jakarta.apache.org/ant/">Apache Ant</a></li>
+<li><a href="http://www.research.att.com/sw/tools/graphviz/">Graphviz</a> - open source graph drawing software</li>
+<li><a href="http://marc.theaimsgroup.com/?l=ant-user&m=102326721426942&w=2">ant2dot.xsl</a> - an alternative way to create dot file.</li>
+<li><a href="http://mapage.noos.fr/edouard.mercier/new/AntDoc_top.html">AntDoc</a> - JavaDoc style document generation tool.</li>
+</ul>
+
+<hr>
+<p class="footer">
+<a href="http://sourceforge.net"><img class="banner" src="http://sourceforge.net/sflogo.php?group_id=57858&type=1" width="88" height="31" border="0" alt="SourceForge.net Logo"></a>
+</p>
+
+</body>
+</html>

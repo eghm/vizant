@@ -340,7 +340,7 @@ public class VizPrinter {
 		+ "\\n" + escapeId(label);
 	    out.print(" label=\"" + label + "\"");
 	} else if (! id.equals(label)) {
-	    out.print(" label\"=" + getQuotedId(label) + " ");
+	    out.print(" label=" + getQuotedId(label) + " ");
 	}
 	if (target.isDefault()) {
 	    printDefaultNodeAttributes(isSubgraph);

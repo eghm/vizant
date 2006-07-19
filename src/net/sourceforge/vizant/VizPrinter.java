@@ -5,10 +5,9 @@ import java.util.Vector;
 import java.util.Enumeration;
 
 /**
- * A class to print xml graph of dependencies.
+ * A class to print DOT.
  * 
  * @author <a href="mailto:kengo@tt.rim.or.jp">KOSEKI Kengo</a>
- * @author <a href="mailto:nicolaken@apache.org">Nicola Ken Barozzi</a>
  */
 public class VizPrinter {
     /** the projects which will be printed */
@@ -149,17 +148,20 @@ public class VizPrinter {
     }
 
     public void printAttrStmt(VizAttrStmt as) {
-        Enumeration enum = as.getAttributes();
-        while (enum.hasMoreElements()) {
-	    VizAttr attr = (VizAttr)enum.nextElement();
+        out.print(" [");
+        Enumeration attrEnum = as.getAttributes();
+        while (attrEnum.hasMoreElements()) {
+	    VizAttr attr = (VizAttr)attrEnum.nextElement();
 
 	    // The attribute value must be raw. DO NOT ESCAPE.
 	    // Some escape sequence exists: 
 	    // justification: \r \l \n
 	    // conversion: \N
 	    // \xT \xt \xD \xd \xf \xb \xx
-            out.print("<attribute name="+getQuotedId(attr.getName()) + " value=\"" + attr.getValue() + "\" />");
+            out.print(getQuotedId(attr.getName()) + "=\""
+		      + attr.getValue() + "\",");
         }
+        out.print("]");
     }
 
     public boolean printAttrIfExists(Hashtable map, VizASType type) {
@@ -193,9 +195,9 @@ public class VizPrinter {
     }
 
     private void filterReferences(Vector targets) {
-        Enumeration enum = projects.elements();
-        while (enum.hasMoreElements()) {
-            Enumeration targetEnum = ((VizProject)enum.nextElement())
+        Enumeration projEnum = projects.elements();
+        while (projEnum.hasMoreElements()) {
+            Enumeration targetEnum = ((VizProject)projEnum.nextElement())
                 .getOrderedTargets().elements();
             while (targetEnum.hasMoreElements()) {
                 VizTarget target = (VizTarget)targetEnum.nextElement();
@@ -206,9 +208,9 @@ public class VizPrinter {
 
     private void eraseNotContainsTargets(Vector targets) {
         Vector newProjects = new Vector();
-        Enumeration enum = projects.elements();
-        while (enum.hasMoreElements()) {
-            VizProject oldp = (VizProject)enum.nextElement();
+        Enumeration projEnum = projects.elements();
+        while (projEnum.hasMoreElements()) {
+            VizProject oldp = (VizProject)projEnum.nextElement();
             VizProject newp = new VizProject();
             oldp.copyAttributes(newp);
             Enumeration targetEnum = oldp.getOrderedTargets().elements();
@@ -237,9 +239,9 @@ public class VizPrinter {
 	} else {
 	    refs = target.getReferencesOut();
 	}
-        Enumeration enum = refs.elements();
-	while (enum.hasMoreElements()) {
-	    VizReference ref = (VizReference)enum.nextElement();
+        Enumeration refEnum = refs.elements();
+	while (refEnum.hasMoreElements()) {
+	    VizReference ref = (VizReference)refEnum.nextElement();
 	    VizTarget t = (backward) ? ref.getFrom() : ref.getTo();
 	    addReferredTargets(t, set, backward);
 	}
@@ -253,9 +255,9 @@ public class VizPrinter {
 
     public void printAttributeStatement(Hashtable map, VizASType type) {
         if (map.get(type) != null) {
-            print("<attributes type=\""+type.getType()+"\">");
+            print(type.getType());
             printAttrIfExists(map, type);
-            out.println("</attributes>");
+            out.println(";");
         }
     }
 
@@ -276,7 +278,7 @@ public class VizPrinter {
         filterReferences();
 	idtable = createIDTable(projects);
 
-        out.println("<?xml version=\"1.0\"?>\n<graph name=" + getQuotedId(graphid)+ ">\n");
+        out.println("digraph " + getQuotedId(graphid) + " {");
         indentLevel++;
 
         printBaseAttributes(attrMap);
@@ -284,16 +286,16 @@ public class VizPrinter {
         int subgraphNum = 0;
         Vector clusterRefs = new Vector();
 
-        Enumeration enum = projects.elements();
-        while (enum.hasMoreElements()) {
-	    printProject((VizProject)enum.nextElement(),
+        Enumeration refEnum = projects.elements();
+        while (refEnum.hasMoreElements()) {
+	    printProject((VizProject)refEnum.nextElement(),
 			 clusterRefs, subgraphNum);
             subgraphNum++;
         }
 	printClusterRefs(clusterRefs);
 
         indentLevel--;
-        out.println("</graph>");
+        out.println("}");
     }
 
 
@@ -301,17 +303,16 @@ public class VizPrinter {
 			      Vector clusterRefs,
 			      int subgraphNum) {
 	if (0 < subgraphNum) {
-	    println("<subgraph "
-		    + (noCluster ? "" : "numcluster=\"")
+	    println("subgraph \""
+		    + (noCluster ? "" : "cluster:")
 		    + subgraphNum
-		    + "\"");
+		    + "\" {");
 	    indentLevel++;
-	    println(" label="
+	    println("\"label\"="
 		    + getQuotedId(project.getDir() + " "
 				  + project.getFile())
-		    + " ");
+		    + ";");
 	    printBaseAttributes(subgraphAttrMap);
-            println(">");	    
 	}
 	Enumeration targetEnum = project.getOrderedTargets().elements();
 	while (targetEnum.hasMoreElements()) {
@@ -320,7 +321,7 @@ public class VizPrinter {
 	}
 	if (0 < subgraphNum) {
 	    indentLevel--;
-	    println("</subgraph>");
+	    println("}");
 	}
     }
 
@@ -330,7 +331,7 @@ public class VizPrinter {
 			     Vector clusterRefs,
 			     boolean isSubgraph) {
 	String id = idtable.getId(target);
-	print("<node id=" + getQuotedId(id));
+	print(getQuotedId(id));
 	
 	String label = target.getId();
 	label = ("".equals(label)) ? "(default)" : label;
@@ -338,14 +339,14 @@ public class VizPrinter {
 	    label = escapeId(project.getDir() + " " 
 			     + project.getFile())
 		+ "\\n" + escapeId(label);
-	    out.print(" label=\"" + label + "\"");
+	    out.print(" [\"label\"=\"" + label + "\"]");
 	} else if (! id.equals(label)) {
-	    out.print(" label=" + getQuotedId(label) + " ");
+	    out.print(" [\"label\"=" + getQuotedId(label) + "]");
 	}
 	if (target.isDefault()) {
 	    printDefaultNodeAttributes(isSubgraph);
 	}
-	out.println("/>");
+	out.println(";");
 
 	Enumeration refs = target.getReferencesOut().elements();
 	while (refs.hasMoreElements()) {
@@ -354,27 +355,27 @@ public class VizPrinter {
 		clusterRefs.addElement(ref);
 	    } else {
 		String refid = idtable.getId(ref.getTo());
-		print("<edge from="+getQuotedId(id) + " to=" + getQuotedId(refid) + " ");
+		print(getQuotedId(id) + " -> " + getQuotedId(refid));
 		if (ref.getType() == VizReference.DEPENDS) {
 		    printAttrIfExists(attrMap, VizASType.EDGE_DEPENDS);
 		} else if (ref.getType() == VizReference.ANTCALL) {
 		    printAttrIfExists(attrMap, VizASType.EDGE_ANTCALL);
 		}
-		out.println("/>\n");
+		out.println(";");
 	    }
 	}
     }
 
 
     private void printClusterRefs(Vector clusterRefs) {
-        Enumeration enum = clusterRefs.elements();
-        while (enum.hasMoreElements()) {
-            VizReference ref = (VizReference)enum.nextElement();
+        Enumeration clusterEnum = clusterRefs.elements();
+        while (clusterEnum.hasMoreElements()) {
+            VizReference ref = (VizReference)clusterEnum.nextElement();
             String from = idtable.getId(ref.getFrom());
             String to = idtable.getId(ref.getTo());
-            print("<edge from="+getQuotedId(from) + " to=" + getQuotedId(to) + " ");
+            print(getQuotedId(from) + " -> " + getQuotedId(to));
             printAttrIfExists(attrMap, VizASType.EDGE_ANT);
-	    print("/>\n");
+            out.println(";");
         }
     }
 
@@ -382,11 +383,18 @@ public class VizPrinter {
      * replace string.
      */
     private String replace(String in, String before, String after) {
-        if (in.length() == 0)
+        
+        // guard statements
+        if (in==null || in.length() == 0) {
             return "";
-        if (before.length() == 0)
+        }
+        if (before==null || before.length() == 0) {
             return in;
-
+        }
+        if (after==null) {
+            after = "";
+        }
+        
         int start = 0;
         int end = -1;
         int len = before.length();
@@ -421,9 +429,9 @@ public class VizPrinter {
 	    Hashtable result = new Hashtable();
 	    Vector idSet = new Vector();
 
-	    Enumeration enum = projects.elements();
-	    while (enum.hasMoreElements()) {
-		VizProject project = (VizProject)enum.nextElement();
+	    Enumeration clusterEnum = projects.elements();
+	    while (clusterEnum.hasMoreElements()) {
+		VizProject project = (VizProject)clusterEnum.nextElement();
 		Vector targetlist = project.getOrderedTargets();
 		Enumeration targetEnum = targetlist.elements();
 		while (targetEnum.hasMoreElements()) {
@@ -443,6 +451,4 @@ public class VizPrinter {
 	}
     }
 }
-
-
 

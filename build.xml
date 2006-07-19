@@ -1,17 +1,12 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.6 2002/07/23 18:14:59 nicolaken Exp $ -->
 <project name="Vizant" basedir="." default="main">
    <property name="src" location="src" />
    <property name="build" location="build" />
    <property name="vizant.antfile" value="build.xml" />
    <property name="dot.format" value="png" />
 
-   <target name="main" depends="jar,vizant,xml2formats,dot" >
-     <echo>--------------------------------------------------------------</echo>
-     <echo> Build finished. Please open</echo>
-     <echo>      ${build}/index.html </echo>
-     <echo> in your browser to see the results.</echo>
-     <echo>--------------------------------------------------------------</echo>
+   <target name="main" depends="jar,vizant,dot" description="Builds the jar, and runs vizant on this build file" >
+      	<echo>See ${build}/out.${dot.format} for the resulting image.</echo>
    </target>
 
    <target name="init">
@@ -19,12 +14,50 @@
       <mkdir dir="${build}/classes" />
    </target>
 
-   <target name="build" depends="init">
-      <javac srcdir="${src}" destdir="${build}/classes" includes="net/sourceforge/vizant/*.java" />
+   <target name="build" depends="init" description="Compiles vizant source">
+      	<echo>Start Vizant Build...</echo>
+	<javac srcdir="${src}" 
+	       destdir="${build}/classes"
+               includes="net/sourceforge/vizant/*.java" 
+               classpath="${build}/classes" />
+      	<echo>...Done Vizant Build</echo>
    </target>
 
-   <target name="buildtest" depends="build">
-      <javac srcdir="${src}" destdir="${build}/classes" includes="testcases/*.java" />
+   <target name="defvizant">
+      <taskdef name="vizant" classname="net.sourceforge.vizant.Vizant" classpath="build/vizant.jar" />
+   </target>
+
+   <target name="vizant" depends="defvizant">
+      <vizant antfile="${vizant.antfile}" outfile="${build}/build.dot" uniqueref="true" />
+   </target>
+
+   <target name="dot">
+      <exec executable="dot">
+         <arg line="-T${dot.format} ${build}/build.dot -o ${build}/out.${dot.format}" />
+      </exec>
+   </target>
+
+   <target name="jar" depends="build" description="Builds the jar file">
+      <jar jarfile="${build}/vizant.jar" basedir="${build}/classes" />
+   </target>
+
+   <target name="clean" description="Deletes the build directory">
+      <delete dir="${build}" />
+
+      <delete verbose="true">
+         <fileset dir="." defaultexcludes="no">
+            <include name="**/*~" />
+         </fileset>
+      </delete>
+   </target>
+
+
+   <!-- ########## Test cases need to be put into a test package
+
+   <target name="buildtest" depends="build" description="Builds the test cases">
+      	<echo>Start Test Case Build...</echo>
+        <javac srcdir="${src}" destdir="${build}/classes" includes="testcases/*.java" />
+      	<echo>...Done Test Case Build</echo>
    </target>
 
    <target name="test" depends="buildtest">
@@ -43,20 +76,17 @@
       </junit>
    </target>
 
-   <target name="defvizant">
-      <taskdef name="vizant" classname="net.sourceforge.vizant.Vizant" classpath="build/vizant.jar" />
-   </target>
+   -->
 
-   <target name="vizant" depends="defvizant">
-      <vizant antfile="${vizant.antfile}" outfile="${build}/buildgraph.xml" uniqueref="true" />
-   </target>
 
-   <target name="xml2formats">
+  <!--####### Targets Still In Development 
+   
+  <target name="xml2formats">
       <xslt in="${build}/buildgraph.xml" out="${build}/build.dot" style="src/stylesheets/xml2dot.xsl" />
-
       <xslt in="${build}/buildgraph.xml" out="${build}/build.html" style="src/stylesheets/xml2html.xsl" />
 
-      <xslt in="${build}/buildgraph.xml" out="${build}/buildtg.xml" style="src/stylesheets/xml2tg.xsl" />    
+      <xslt in="${build}/buildgraph.xml" out="${build}/buildtg.xml" style="src/stylesheets/xml2tg.xsl" / > 
+   
       <copy file="${build}/buildtg.xml" tofile="${build}/InitialXML._xml"/>  
       <copy todir="${build}">
         <fileset dir="src/resources/tg" casesensitive="yes"/>
@@ -82,26 +112,12 @@
        </path> 
      </classpath>
       </java>
-   </target>
+   </targe>
 
-   <target name="dot">
-      <exec executable="dot">
-         <arg line="-T${dot.format} ${build}/build.dot -o ${build}/out.${dot.format}" />
-      </exec>
-   </target>
+   ################-->
 
-   <target name="jar" depends="build">
-      <jar jarfile="${build}/vizant.jar" basedir="${build}/classes" />
-   </target>
 
-   <target name="clean">
-      <delete dir="${build}" />
 
-      <delete verbose="true">
-         <fileset dir="." defaultexcludes="no">
-            <include name="**/*~" />
-         </fileset>
-      </delete>
-   </target>
+
 </project>
 

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<project name="Vizant" basedir="." default="main">
+
+	<import file="sample-build-config.xml" />
+	<import file="sample-build-common.xml" />
+	<import file="sample-build-test.xml" />
+
+   <target name="main" depends="jar,vizant,dot" description="Builds the jar, and runs vizant on this build file" >
+      	<echo>See ${build}/out.${dot.format} for the resulting image.</echo>
+   </target>
+
+
+
+   <target name="defvizant">
+      <taskdef name="vizant" classname="net.sourceforge.vizant.Vizant" classpath="build/vizant.jar" />
+   </target>
+
+   <target name="vizant" depends="defvizant">
+      <vizant antfile="${vizant.antfile}" outfile="${build}/build.dot" uniqueref="true" />
+   </target>
+
+</project>
+

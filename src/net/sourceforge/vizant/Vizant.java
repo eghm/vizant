@@ -32,11 +32,7 @@ public class Vizant extends Task {
     
     public void setAntfile(File antfile) throws BuildException {
 	this.antfile = antfile;
-	try {
-	    loader.setInputStream(new FileInputStream(antfile));
-	} catch (FileNotFoundException e) {
-	    throw new BuildException(e);
-	}
+    loader.setFile(antfile);
     }
 
     public void setOutfile(File outfile) {
@@ -96,7 +92,7 @@ public class Vizant extends Task {
     }
 
     protected VizProjectLoader getLoader() {
-	return new VizProjectLoaderImpl();
+	return new VizProjectLoaderAntImpl();
     }
 
     protected void checkConfiguration() throws BuildException {

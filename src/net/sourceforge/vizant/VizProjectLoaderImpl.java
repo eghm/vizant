@@ -1,21 +1,6 @@
 package net.sourceforge.vizant;
 
-import java.util.Vector;
-import java.util.Enumeration;
-import java.util.StringTokenizer;
-import java.io.File;
-import java.io.InputStream;
-import java.io.IOException;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.Attributes;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.tools.ant.BuildException;
+import java.io.File;import java.io.FileInputStream;import java.io.IOException;import java.util.Enumeration;import java.util.StringTokenizer;import java.util.Vector;import javax.xml.parsers.ParserConfigurationException;import javax.xml.parsers.SAXParser;import javax.xml.parsers.SAXParserFactory;import org.apache.tools.ant.BuildException;import org.xml.sax.Attributes;import org.xml.sax.InputSource;import org.xml.sax.SAXException;import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * An implementation of VizProjectLoader.
@@ -23,11 +8,11 @@ import org.apache.tools.ant.BuildException;
  * @author <a href="mailto:kengo@tt.rim.or.jp">KOSEKI Kengo</a>
  */
 public class VizProjectLoaderImpl implements VizProjectLoader {
-    private InputStream stream;
-    private boolean uniqueref;
+    protected File file;
+    protected boolean uniqueref;
     private boolean ignoreAnt;
     private boolean ignoreAntcall;
-    private boolean ignoreDepends;
+    protected boolean ignoreDepends;
 
     public VizProjectLoaderImpl() {
 	uniqueref = false;
@@ -52,15 +37,15 @@ public class VizProjectLoaderImpl implements VizProjectLoader {
 	this.ignoreDepends = ignoreDepends;
     }
 
-    public void setInputStream(InputStream stream) {
-	this.stream = stream;
+    public void setFile(File file) {
+	this.file = file;
     }
 
     public Vector getProjects() throws BuildException {
 	try {
             SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
 	    SAXHandler handler = new SAXHandler();
-	    parser.parse(new InputSource(stream), handler);
+	    parser.parse(new InputSource(new FileInputStream(file)), handler);
 	    return handler.getProjects();
 	} catch(SAXException e) {
 	    throw new BuildException(e);

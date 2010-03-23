@@ -1,5 +1,6 @@
 package net.sourceforge.vizant;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.Vector;
 import org.apache.tools.ant.BuildException;
@@ -14,6 +15,6 @@ public interface VizProjectLoader {
     public void ignoreAnt(boolean opt);
     public void ignoreAntcall(boolean opt);
     public void ignoreDepends(boolean opt);
-    public void setInputStream(InputStream stream);
+    public void setFile(File file);
     public Vector getProjects() throws BuildException;
 }

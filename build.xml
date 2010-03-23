@@ -2,7 +2,7 @@
 <project name="Vizant" basedir="." default="main">
    <property name="src" location="src" />
    <property name="build" location="build" />
-   <property name="vizant.antfile" value="build.xml" />
+   <property name="vizant.antfile" value="src/testbuildxmls/sample-build.xml" />
    <property name="dot.format" value="png" />
 
    <target name="main" depends="jar,vizant,dot" description="Builds the jar, and runs vizant on this build file" >

@@ -22,11 +22,13 @@ public class VizProjectLoaderAntImpl extends VizProjectLoaderImpl {
 	private String defaultName;
 
 	public Vector getProjects() throws BuildException {
+		projects = super.getProjects();
+		baseProject = (VizProject)projects.get(0);
 		Project project = new Project();
 		project.init();
 		ProjectHelper.configureProject(project, file);
 
-		configureProject(project);
+//		configureProject(project);
 
 		Hashtable targets = project.getTargets();
 

@@ -2,8 +2,6 @@ package net.sourceforge.vizant;
 
 import junit.framework.*;
 
-import org.apache.tools.ant.*;
-
 public class VizPrinterTest extends TestCase {
     VizPrinter printer;
     BufferedWriter writer;
@@ -13,14 +11,15 @@ public class VizPrinterTest extends TestCase {
     }
 
     public void setUp() {
-	printer = new VizPrinter();
+	printer = new VizPrinterAntImpl();
 	writer = new BufferedWriter();
 	printer.setWriter(writer);
     }
 
     public void testPrintEmpty() {
 	printer.print();
-	assertEquals("digraph \"G\" {\n" 
+	assertEquals(printer.getClass().toString(),
+			   "digraph \"G\" {\n" 
 		     + "    graph [\"rankdir\"=\"LR\",];\n"
 		     + "}\n", writer.getString());
     }
@@ -42,14 +41,15 @@ public class VizPrinterTest extends TestCase {
 	printer.addAttributeStatement(edge);
 
 	VizAttrStmt node = new VizAttrStmt();
-	edge.setType("node");
-	edge.addAttribute("c", "1");
-	edge.addAttribute("b", "2");
-	edge.addAttribute("a", "3");
+	node.setType("node");
+	node.addAttribute("c", "1");
+	node.addAttribute("b", "2");
+	node.addAttribute("a", "3");
 	printer.addAttributeStatement(node);
 
 	printer.print();
-	assertEquals("digraph \"build\" {\n" 
+	assertEquals(printer.getClass().toString(), 
+			   "digraph \"build\" {\n" 
 		     + "    graph [\"rankdir\"=\"LR\",\"label\"=\"test2\",];\n"
 		     + "    node [\"rankdir\"=\"LR\",\"label\"=\"test2\",];\n"
 		     + "}\n", writer.getString());

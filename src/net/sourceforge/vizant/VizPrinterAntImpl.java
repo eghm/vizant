@@ -9,7 +9,7 @@ import java.util.Enumeration;
  * 
  * @author <a href="mailto:kengo@tt.rim.or.jp">KOSEKI Kengo</a>
  */
-public class VizPrinter {
+public class VizPrinterAntImpl implements VizPrinter {
     /** the projects which will be printed */
     private Vector projects = new Vector();
     /** table of attribute statement (VizASType to VizAttrStmt) */
@@ -31,7 +31,7 @@ public class VizPrinter {
     private int indentLevel = 0;
     private final String indent;
 
-    public VizPrinter() {
+    public VizPrinterAntImpl() {
 	attrMap = getDefaultAttrMap();
 	subgraphAttrMap = new Hashtable();
 	indent = "    ";
@@ -149,9 +149,9 @@ public class VizPrinter {
 
     public void printAttrStmt(VizAttrStmt as) {
         out.print(" [");
-        Enumeration enum = as.getAttributes();
-        while (enum.hasMoreElements()) {
-	    VizAttr attr = (VizAttr)enum.nextElement();
+        Enumeration attrEnum = as.getAttributes();
+        while (attrEnum.hasMoreElements()) {
+	    VizAttr attr = (VizAttr)attrEnum.nextElement();
 
 	    // The attribute value must be raw. DO NOT ESCAPE.
 	    // Some escape sequence exists: 
@@ -195,9 +195,9 @@ public class VizPrinter {
     }
 
     private void filterReferences(Vector targets) {
-        Enumeration enum = projects.elements();
-        while (enum.hasMoreElements()) {
-            Enumeration targetEnum = ((VizProject)enum.nextElement())
+        Enumeration projEnum = projects.elements();
+        while (projEnum.hasMoreElements()) {
+            Enumeration targetEnum = ((VizProject)projEnum.nextElement())
                 .getOrderedTargets().elements();
             while (targetEnum.hasMoreElements()) {
                 VizTarget target = (VizTarget)targetEnum.nextElement();
@@ -208,9 +208,9 @@ public class VizPrinter {
 
     private void eraseNotContainsTargets(Vector targets) {
         Vector newProjects = new Vector();
-        Enumeration enum = projects.elements();
-        while (enum.hasMoreElements()) {
-            VizProject oldp = (VizProject)enum.nextElement();
+        Enumeration projEnum = projects.elements();
+        while (projEnum.hasMoreElements()) {
+            VizProject oldp = (VizProject)projEnum.nextElement();
             VizProject newp = new VizProject();
             oldp.copyAttributes(newp);
             Enumeration targetEnum = oldp.getOrderedTargets().elements();
@@ -239,9 +239,9 @@ public class VizPrinter {
 	} else {
 	    refs = target.getReferencesOut();
 	}
-        Enumeration enum = refs.elements();
-	while (enum.hasMoreElements()) {
-	    VizReference ref = (VizReference)enum.nextElement();
+        Enumeration refEnum = refs.elements();
+	while (refEnum.hasMoreElements()) {
+	    VizReference ref = (VizReference)refEnum.nextElement();
 	    VizTarget t = (backward) ? ref.getFrom() : ref.getTo();
 	    addReferredTargets(t, set, backward);
 	}
@@ -286,9 +286,9 @@ public class VizPrinter {
         int subgraphNum = 0;
         Vector clusterRefs = new Vector();
 
-        Enumeration enum = projects.elements();
-        while (enum.hasMoreElements()) {
-	    printProject((VizProject)enum.nextElement(),
+        Enumeration refEnum = projects.elements();
+        while (refEnum.hasMoreElements()) {
+	    printProject((VizProject)refEnum.nextElement(),
 			 clusterRefs, subgraphNum);
             subgraphNum++;
         }
@@ -368,9 +368,9 @@ public class VizPrinter {
 
 
     private void printClusterRefs(Vector clusterRefs) {
-        Enumeration enum = clusterRefs.elements();
-        while (enum.hasMoreElements()) {
-            VizReference ref = (VizReference)enum.nextElement();
+        Enumeration clusterEnum = clusterRefs.elements();
+        while (clusterEnum.hasMoreElements()) {
+            VizReference ref = (VizReference)clusterEnum.nextElement();
             String from = idtable.getId(ref.getFrom());
             String to = idtable.getId(ref.getTo());
             print(getQuotedId(from) + " -> " + getQuotedId(to));
@@ -383,11 +383,18 @@ public class VizPrinter {
      * replace string.
      */
     private String replace(String in, String before, String after) {
-        if (in.length() == 0)
+        
+        // guard statements
+        if (in==null || in.length() == 0) {
             return "";
-        if (before.length() == 0)
+        }
+        if (before==null || before.length() == 0) {
             return in;
-
+        }
+        if (after==null) {
+            after = "";
+        }
+        
         int start = 0;
         int end = -1;
         int len = before.length();
@@ -422,9 +429,9 @@ public class VizPrinter {
 	    Hashtable result = new Hashtable();
 	    Vector idSet = new Vector();
 
-	    Enumeration enum = projects.elements();
-	    while (enum.hasMoreElements()) {
-		VizProject project = (VizProject)enum.nextElement();
+	    Enumeration clusterEnum = projects.elements();
+	    while (clusterEnum.hasMoreElements()) {
+		VizProject project = (VizProject)clusterEnum.nextElement();
 		Vector targetlist = project.getOrderedTargets();
 		Enumeration targetEnum = targetlist.elements();
 		while (targetEnum.hasMoreElements()) {

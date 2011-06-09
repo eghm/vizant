@@ -74,7 +74,7 @@ public class Vizant extends Task {
     public void addConfiguredAttrstmt(VizAttrStmt attrstmt) 
         throws BuildException {
         attrstmt.checkConfiguration();
-        printer.addAttributeStatement(attrstmt);
+        printer.addSubgraphAttributeStatement(attrstmt);
     }
 
     public void addSubgraph(VizSubgraph subgraph) {
@@ -88,10 +88,11 @@ public class Vizant extends Task {
     }
 
     protected VizPrinter getPrinter() {
-	return new VizPrinter();
+	return new VizPrinterAntImpl();
     }
 
     protected VizProjectLoader getLoader() {
+//	return new VizProjectLoaderImpl();
 	return new VizProjectLoaderAntImpl();
     }
 

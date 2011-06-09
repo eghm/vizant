@@ -1,3 +1,5 @@
+package net.sourceforge.vizant;
+
 public class BufferedWriter implements VizWriter {
     StringBuffer buffer = new StringBuffer();
     

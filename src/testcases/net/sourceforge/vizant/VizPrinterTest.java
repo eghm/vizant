@@ -1,4 +1,7 @@
+package net.sourceforge.vizant;
+
 import junit.framework.*;
+
 import org.apache.tools.ant.*;
 
 public class VizPrinterTest extends TestCase {

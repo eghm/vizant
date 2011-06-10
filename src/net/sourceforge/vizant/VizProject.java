@@ -66,4 +66,60 @@ public class VizProject {
             + " orderedTargets:" + orderedTargets;
     }
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((allTargets == null) ? 0 : allTargets.hashCode());
+		result = prime * result + ((dir == null) ? 0 : dir.hashCode());
+		result = prime * result + ((file == null) ? 0 : file.hashCode());
+		result = prime * result
+				+ ((orderedTargets == null) ? 0 : orderedTargets.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		VizProject other = (VizProject) obj;
+		if (allTargets == null) {
+			if (other.allTargets != null) {
+				return false;
+			}
+		} else if (!allTargets.equals(other.allTargets)) {
+			return false;
+		}
+		if (dir == null) {
+			if (other.dir != null) {
+				return false;
+			}
+		} else if (!dir.equals(other.dir)) {
+			return false;
+		}
+		if (file == null) {
+			if (other.file != null) {
+				return false;
+			}
+		} else if (!file.equals(other.file)) {
+			return false;
+		}
+		if (orderedTargets == null) {
+			if (other.orderedTargets != null) {
+				return false;
+			}
+		} else if (!orderedTargets.equals(other.orderedTargets)) {
+			return false;
+		}
+		return true;
+	}
+
 }

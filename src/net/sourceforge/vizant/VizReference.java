@@ -55,8 +55,12 @@ public class VizReference {
     public int hashCode() {
         int ret = 17;
         ret = 37 * ret + getType();
-        ret = 37 * ret + ((getFrom() == null) ? 0 : getFrom().hashCode());
-        ret = 37 * ret + ((getTo() == null) ? 0 : getTo().hashCode());
+        ret = 37 * ret + ((getFrom() == null && getFrom().getId() == null) ? 0 : getFrom().getId().hashCode());
+        ret = 37 * ret + ((getTo() == null && getTo().getId() == null) ? 0 : getTo().getId().hashCode());
         return ret;
+    }
+    
+    public String toString() {
+    	return "Type " + DEPENDS +" From " + from.getId() + " To " + to.getId();
     }
 }

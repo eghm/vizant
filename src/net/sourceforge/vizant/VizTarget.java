@@ -1,5 +1,6 @@
 package net.sourceforge.vizant;
 
+import java.util.Iterator;
 import java.util.Vector;
 import java.util.Enumeration;
 
@@ -88,5 +89,75 @@ public class VizTarget {
             + " referencesOut:" + referencesOut
             + " default:" + defaultTarget;
     }
+
+//    public String refVectorToString(Vector v) {
+//    	if (v == null) return "[]";
+//    	StringBuilder stringBuilder = new StringBuilder("[");
+//    	for (Iterator iterator = v.iterator(); iterator.hasNext();) {
+//			VizReference ref = (VizReference) iterator.next();
+//			stringBuilder.append(ref.toString()).append(",");
+//		}
+//    	return stringBuilder.toString().substring(0, stringBuilder.length() - 1) + "]";
+//    }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (defaultTarget ? 1231 : 1237);
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((project == null) ? 0 : (project.getDir() + project.getFile()).hashCode());
+		result = prime * result
+				+ ((referencesIn == null) ? 0 : referencesIn.hashCode());
+		result = prime * result
+				+ ((referencesOut == null) ? 0 : referencesOut.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		VizTarget other = (VizTarget) obj;
+		if (defaultTarget != other.defaultTarget) {
+			return false;
+		}
+		if (id == null) {
+			if (other.id != null) {
+				return false;
+			}
+		} else if (!id.equals(other.id)) {
+			return false;
+		}
+		if (project == null) {
+			if (other.project != null) {
+				return false;
+			}
+		} else if (!(project.getDir() + project.getFile()).equals(other.project.getDir() + other.project.getFile())) {
+			return false;
+		}
+		if (referencesIn == null) {
+			if (other.referencesIn != null) {
+				return false;
+			}
+		} else if (!referencesIn.equals(other.referencesIn)) {
+			return false;
+		}
+		if (referencesOut == null) {
+			if (other.referencesOut != null) {
+				return false;
+			}
+		} else if (!referencesOut.equals(other.referencesOut)) {
+			return false;
+		}
+		return true;
+	}
 }
 

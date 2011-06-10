@@ -149,9 +149,9 @@ public class VizPrinterImpl implements VizPrinter {
 
     public void printAttrStmt(VizAttrStmt as) {
         out.print(" [");
-        Enumeration enu = as.getAttributes();
-        while (enu.hasMoreElements()) {
-	    VizAttr attr = (VizAttr)enu.nextElement();
+        Enumeration attrEnum = as.getAttributes();
+        while (attrEnum.hasMoreElements()) {
+	    VizAttr attr = (VizAttr)attrEnum.nextElement();
 
 	    // The attribute value must be raw. DO NOT ESCAPE.
 	    // Some escape sequence exists: 
@@ -195,9 +195,9 @@ public class VizPrinterImpl implements VizPrinter {
     }
 
     private void filterReferences(Vector targets) {
-        Enumeration enu = projects.elements();
-        while (enu.hasMoreElements()) {
-            Enumeration targetEnum = ((VizProject)enu.nextElement())
+        Enumeration projEnum = projects.elements();
+        while (projEnum.hasMoreElements()) {
+            Enumeration targetEnum = ((VizProject)projEnum.nextElement())
                 .getOrderedTargets().elements();
             while (targetEnum.hasMoreElements()) {
                 VizTarget target = (VizTarget)targetEnum.nextElement();
@@ -208,9 +208,9 @@ public class VizPrinterImpl implements VizPrinter {
 
     private void eraseNotContainsTargets(Vector targets) {
         Vector newProjects = new Vector();
-        Enumeration enu = projects.elements();
-        while (enu.hasMoreElements()) {
-            VizProject oldp = (VizProject)enu.nextElement();
+        Enumeration projEnum = projects.elements();
+        while (projEnum.hasMoreElements()) {
+            VizProject oldp = (VizProject)projEnum.nextElement();
             VizProject newp = new VizProject();
             oldp.copyAttributes(newp);
             Enumeration targetEnum = oldp.getOrderedTargets().elements();
@@ -239,9 +239,9 @@ public class VizPrinterImpl implements VizPrinter {
 	} else {
 	    refs = target.getReferencesOut();
 	}
-        Enumeration enu = refs.elements();
-	while (enu.hasMoreElements()) {
-	    VizReference ref = (VizReference)enu.nextElement();
+        Enumeration refEnum = refs.elements();
+	while (refEnum.hasMoreElements()) {
+	    VizReference ref = (VizReference)refEnum.nextElement();
 	    VizTarget t = (backward) ? ref.getFrom() : ref.getTo();
 	    addReferredTargets(t, set, backward);
 	}
@@ -286,9 +286,9 @@ public class VizPrinterImpl implements VizPrinter {
         int subgraphNum = 0;
         Vector clusterRefs = new Vector();
 
-        Enumeration enu = projects.elements();
-        while (enu.hasMoreElements()) {
-	    printProject((VizProject)enu.nextElement(),
+        Enumeration projEnum = projects.elements();
+        while (projEnum.hasMoreElements()) {
+	    printProject((VizProject)projEnum.nextElement(),
 			 clusterRefs, subgraphNum);
             subgraphNum++;
         }
@@ -368,9 +368,9 @@ public class VizPrinterImpl implements VizPrinter {
 
 
     private void printClusterRefs(Vector clusterRefs) {
-        Enumeration enu = clusterRefs.elements();
-        while (enu.hasMoreElements()) {
-            VizReference ref = (VizReference)enu.nextElement();
+        Enumeration clusterEnum = clusterRefs.elements();
+        while (clusterEnum.hasMoreElements()) {
+            VizReference ref = (VizReference)clusterEnum.nextElement();
             String from = idtable.getId(ref.getFrom());
             String to = idtable.getId(ref.getTo());
             print(getQuotedId(from) + " -> " + getQuotedId(to));
@@ -422,9 +422,9 @@ public class VizPrinterImpl implements VizPrinter {
 	    Hashtable result = new Hashtable();
 	    Vector idSet = new Vector();
 
-	    Enumeration enu = projects.elements();
-	    while (enu.hasMoreElements()) {
-		VizProject project = (VizProject)enu.nextElement();
+	    Enumeration projEnum = projects.elements();
+	    while (projEnum.hasMoreElements()) {
+		VizProject project = (VizProject)projEnum.nextElement();
 		Vector targetlist = project.getOrderedTargets();
 		Enumeration targetEnum = targetlist.elements();
 		while (targetEnum.hasMoreElements()) {

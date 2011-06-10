@@ -43,6 +43,13 @@
       <jar jarfile="${build}/vizant.jar" basedir="${build}/classes" />
    </target>
 
+   <target name="jar-with-src" depends="build" description="Builds the jar file including source">
+      <jar destfile="${build}/vizantwsrc.jar">
+          <fileset dir="${build}/classes"/>
+          <fileset dir="${src}/"/>
+      </jar>
+   </target>
+
    <target name="clean" description="Deletes the build directory">
       <delete dir="${build}" />
 

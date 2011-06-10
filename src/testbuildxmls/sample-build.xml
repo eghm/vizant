@@ -5,8 +5,9 @@
 	<import file="sample-build-common.xml" />
 	<import file="sample-build-test.xml" />
 
-   <target name="main" depends="jar,vizant,dot" description="Builds the jar, and runs vizant on this build file" >
+   <target name="main" depends="jar,vizant" description="Builds the jar, and runs vizant on this build file" >
       	<echo>See ${build}/out.${dot.format} for the resulting image.</echo>
+      	<ant file="sample-dot.xml" target="dot"/>
    </target>
 
 

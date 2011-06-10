@@ -3,13 +3,8 @@
 
    <target name="init">
       <tstamp />
+      <echo>common init ${DSTAMP}${TSTAMP}</echo>
       <mkdir dir="${build}/classes" />
-   </target>
-
-   <target name="dot">
-      <exec executable="dot">
-         <arg line="-T${dot.format} ${build}/build.dot -o ${build}/out.${dot.format}" />
-      </exec>
    </target>
 
    <target name="jar" depends="build" description="Builds the jar file">

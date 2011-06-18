@@ -1,6 +1,7 @@
 package net.sourceforge.vizant;
 
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
@@ -21,14 +22,20 @@ public class VizProjectLoaderAntImpl extends VizProjectLoaderImpl {
 	private VizProject baseProject;
 	private String defaultName;
 
+	public VizProjectLoaderAntImpl(VizLogger vizLogger) {
+		super(vizLogger);
+	}
+	
 	public Vector getProjects() throws BuildException {
-		projects = super.getProjects();
-		baseProject = (VizProject)projects.get(0);
 		Project project = new Project();
 		project.init();
-		ProjectHelper.configureProject(project, file);
+		try {
+			ProjectHelper.configureProject(project, file);
+		} catch (Throwable t) {
+			vizLogger.warn("Problem with Ant Project configuration of " + file, t);
+		}
 
-//		configureProject(project);
+		configureProject(project);
 
 		Hashtable targets = project.getTargets();
 
@@ -72,24 +79,6 @@ public class VizProjectLoaderAntImpl extends VizProjectLoaderImpl {
 			VizTarget to = baseProject.getTarget(name);
 			addReference(from, to, VizReference.DEPENDS);
 		}
-	}
-
-	private void addAntCall(VizTarget from, String toName) {
-		VizTarget to = baseProject.getTarget(toName);
-		addReference(from, to, VizReference.ANTCALL);
-	}
-
-	private void addAnt(VizTarget from, String toDir, String toFile,
-			String toName) {
-		toDir = (toDir != null) ? toDir : "";
-		toFile = (toFile != null) ? toFile : "";
-		toName = (toName != null) ? toName : "";
-		VizProject toProject = getProject(toDir, toFile);
-		VizTarget to = toProject.getTarget(toName);
-		if ("".equals(toName))
-			to.setDefault(true);
-		toProject.appendTarget(to);
-		addReference(from, to, VizReference.ANT);
 	}
 
 	private VizProject getProject(String dir, String file) {

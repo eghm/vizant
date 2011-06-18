@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<project name="vizant-dev" default="devmain">
+
+	<import file="build.xml" />
+
+	<property name="dev.name" value="with"/>
+
+        <target name="uptodate">
+		<uptodate property="viz.uptodate"
+	            targetfile="${build}/vizant-${dev.name}-src.jar">
+			<srcfiles dir="src/net/sourceforge/vizant" includes="**/**.*"/>
+	        </uptodate>
+	        <echo message="${build}/vizant-${dev.name}-src.jar uptodate? ${viz.uptodate}"/>
+        </target>
+	
+	<target name="devmain" depends="uptodate" unless="viz.uptodate">
+		<antcall target="devbuild"/>
+	</target>
+	
+	<target name="devbuild" depends="jar-with-src"/>
+
+	<target name="test1" depends="devmain">
+		<ant antfile="vizant.xml">
+			<property name="vizant.jar" value="${build}/vizant-${dev.name}.jar"/> 
+			<property name="viz.antfile" value="src/testbuildxmls/sample-build.xml"/> 
+			<property name="viz.output.dir" value="${build}"/> 
+		</ant>
+	</target>
+	
+	<target name="test2" depends="devmain">
+		<ant antfile="vizant.xml">
+			<property name="vizant.jar" value="${build}/vizant-${dev.name}-src.jar"/> 
+			<property name="viz.antfile" value="src/testbuildxmls/2/sample-build-2.xml"/> 
+			<property name="viz.antfileMap" value="src/testbuildxmls/2/sample-antfileMap.txt"/> 
+			<property name="viz.output.dir" value="${build}"/> 
+		</ant>
+	</target>
+
+</project>

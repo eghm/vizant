@@ -11,7 +11,8 @@ import java.util.Vector;
 public class VizProject {
     private String dir = "";
     private String file = "";
-    private Hashtable allTargets = new Hashtable();
+    private String name = "";
+    private static Hashtable allTargets = new Hashtable(); // when not static, 1 node gets a blank label, probably a bug somewhere
     private Vector orderedTargets = new Vector();
 
     public void setDir(String dir) {
@@ -30,6 +31,14 @@ public class VizProject {
         return file;
     }
 
+	public void setName(String projName) {
+		this.name = projName;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+	
     public void copyAttributes(VizProject project) {
         project.setDir(getDir());
         project.setFile(getFile());
@@ -44,9 +53,13 @@ public class VizProject {
     }
 
     public VizTarget getTarget(String id) {
+    	if (id == null || "".equals(id)) {
+    		throw new RuntimeException("bad id '" + id + "'");
+    	}
         VizTarget target = (VizTarget)allTargets.get(id);
         if (target == null) {
-            target = new VizTarget();
+//        	System.out.println("creating new target for " + id + " on project dir " + dir + " file " + file + " name " + name);
+        	target = new VizTarget();
             target.setId(id);
             target.setProject(this);
             allTargets.put(target.getId(), target);
@@ -62,7 +75,7 @@ public class VizProject {
         return "VizProject:" 
             + " dir:" + dir
             + " file:" + file
-            + " allTargets:" + allTargets
+//            + " allTargets:" + allTargets
             + " orderedTargets:" + orderedTargets;
     }
 
@@ -121,5 +134,4 @@ public class VizProject {
 		}
 		return true;
 	}
-
 }

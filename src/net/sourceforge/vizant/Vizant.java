@@ -1,15 +1,13 @@
 package net.sourceforge.vizant;
 
-import java.util.Vector;
 import java.util.Enumeration;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.FileNotFoundException;
 
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 
@@ -18,7 +16,7 @@ import org.apache.tools.ant.BuildException;
  * 
  * @author <a href="mailto:kengo@tt.rim.or.jp">KOSEKI Kengo</a>
  */
-public class Vizant extends Task {
+public class Vizant extends Task implements VizLogger {
     private File antfile;
     private File outfile;
     private VizProjectLoader loader;
@@ -31,10 +29,15 @@ public class Vizant extends Task {
     }
     
     public void setAntfile(File antfile) throws BuildException {
-	this.antfile = antfile;
-    loader.setFile(antfile);
+    	info("setAntfile(File " + antfile + ")");
+        this.antfile = antfile;
+        loader.setFile(antfile);
     }
 
+    public void setAntfileMap(File antfileMap) {
+    	loader.setAntfileMap(antfileMap);
+    }
+    
     public void setOutfile(File outfile) {
 	this.outfile = outfile;
     }
@@ -71,6 +74,10 @@ public class Vizant extends Task {
         loader.ignoreDepends(opt);
     }
 
+    public void setIgnoreimport(boolean opt) {
+        loader.ignoreImport(opt);
+    }
+
     public void addConfiguredAttrstmt(VizAttrStmt attrstmt) 
         throws BuildException {
         attrstmt.checkConfiguration();
@@ -88,12 +95,12 @@ public class Vizant extends Task {
     }
 
     protected VizPrinter getPrinter() {
-	return new VizPrinterAntImpl();
+    	return new VizPrinterAntImpl(this);    		
     }
 
     protected VizProjectLoader getLoader() {
-//	return new VizProjectLoaderImpl();
-	return new VizProjectLoaderAntImpl();
+//   		return new VizProjectLoaderAntImpl(this);
+    	return new VizProjectLoaderImpl(this);
     }
 
     protected void checkConfiguration() throws BuildException {
@@ -152,4 +159,26 @@ public class Vizant extends Task {
 	    }
 	}
     }
+
+	public void debug(String string) {
+		log(string + "\n", Project.MSG_DEBUG);   // prod
+//		log(string + "\n", Project.MSG_VERBOSE); // dev
+	}
+
+	public void verbose(String string) {
+		log(string + "\n", Project.MSG_VERBOSE);
+	}
+
+	public void info(String string) {
+		log(string + "\n", Project.MSG_INFO);
+	}
+
+	public void warn(String string, Throwable t) {
+		System.out.println(string + " " + t.getMessage());
+		log(string + "\n", t, Project.MSG_WARN);
+	}
+
+	public void warn(String string) {
+		log(string + "\n", Project.MSG_WARN);
+	}
 }

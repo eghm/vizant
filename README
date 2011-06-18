@@ -1,1 +1,1 @@
-My Fork of the sourceforge vizant
+My fork of the sourceforge vizant http://vizant.sourceforge.net/  Initially for my purposes, version 0.1.2 (the jar on sourceforge) didn't process imports and 0.1.3 (latest source on sf) only processed target depends.  I modified the src/testbuildxmls to reflect these requirements.  While running vizant on my targeted production projects more requirements became apparent.

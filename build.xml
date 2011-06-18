@@ -2,12 +2,13 @@
 <project name="Vizant" basedir="." default="main">
    <property name="src" location="src" />
    <property name="build" location="build" />
-   <property name="vizant.antfile" value="src/testbuildxmls/sample-build.xml" />
+   <property name="viz.antfile" value="build.xml" />
    <property name="testsrc" location="src/testcases" />
-   <property name="dot.format" value="png" />
+   <property name="vizant.jar" value="${build}/vizant.jar"/>
+   <property name="viz.output.dir" value="${build}"/>
 
-   <target name="main" depends="jar,vizant,dot" description="Builds the jar, and runs vizant on this build file" >
-      	<echo>See ${build}/out.${dot.format} for the resulting image.</echo>
+   <target name="main" depends="jar" description="Builds the jar, and runs vizant on this build file" >
+      	<ant antfile="vizant.xml"/>
    </target>
 
    <target name="init">
@@ -24,27 +25,13 @@
       	<echo>...Done Vizant Build</echo>
    </target>
 
-   <target name="defvizant">
-      <taskdef name="vizant" classname="net.sourceforge.vizant.Vizant" classpath="build/vizant.jar" />
-   </target>
-
-   <target name="vizant" depends="defvizant">
-      <vizant antfile="${vizant.antfile}" outfile="${build}/build.dot" uniqueref="true" />
-   </target>
-
-   <target name="dot">
-      <property name="dot.exec" value="C:\Program Files\Graphviz 2.28\bin\dot.exe" />
-      <exec executable="${dot.exec}">
-         <arg line="-T${dot.format} ${build}/build.dot -o ${build}/out.${dot.format}" />
-      </exec>
-   </target>
-
    <target name="jar" depends="build" description="Builds the jar file">
       <jar jarfile="${build}/vizant.jar" basedir="${build}/classes" />
    </target>
 
    <target name="jar-with-src" depends="build" description="Builds the jar file including source">
-      <jar destfile="${build}/vizantwsrc.jar">
+      <property name="dev.name" value="with" />
+      <jar destfile="${build}/vizant-${dev.name}-src.jar">
           <fileset dir="${build}/classes"/>
           <fileset dir="${src}/"/>
       </jar>

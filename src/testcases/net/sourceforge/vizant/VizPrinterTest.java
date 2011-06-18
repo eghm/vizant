@@ -2,7 +2,7 @@ package net.sourceforge.vizant;
 
 import junit.framework.*;
 
-public class VizPrinterTest extends TestCase {
+public class VizPrinterTest extends TestCase implements VizLogger {
     VizPrinter printer;
     BufferedWriter writer;
 
@@ -11,7 +11,7 @@ public class VizPrinterTest extends TestCase {
     }
 
     public void setUp() {
-	printer = new VizPrinterAntImpl();
+	printer = new VizPrinterAntImpl(this);
 	writer = new BufferedWriter();
 	printer.setWriter(writer);
     }
@@ -23,7 +23,7 @@ public class VizPrinterTest extends TestCase {
 		     + "    graph [\"rankdir\"=\"LR\",];\n"
 		     + "}\n", writer.getString());
     }
-
+    /** broken by the time I got here, same result for either impl */
     public void testSetAttributes() {
 	printer.setGraphid("build");
 
@@ -55,4 +55,24 @@ public class VizPrinterTest extends TestCase {
 		     + "}\n", writer.getString());
     }
 
+	public void debug(String string) {
+		System.out.println(string);
+	}
+
+	public void info(String string) {
+		System.out.println(string);
+	}
+
+	public void verbose(String string) {
+		System.out.println(string);
+	}
+
+	public void warn(String string, Throwable t) {
+		System.out.println(string);
+		t.printStackTrace();
+	}
+
+	public void warn(String string) {
+		System.out.println(string);
+	}
 }

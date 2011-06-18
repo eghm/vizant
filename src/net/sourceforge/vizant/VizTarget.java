@@ -85,9 +85,9 @@ public class VizTarget {
 
     public String toString() {
         return "VizTarget: id:" + id 
-            + " referencesIn:" + referencesIn
-            + " referencesOut:" + referencesOut
-            + " default:" + defaultTarget;
+            + "\n\treferencesIn:" + referencesIn
+            + "\n\treferencesOut:" + referencesOut
+            + "\n\tdefault:" + defaultTarget;
     }
 
 //    public String refVectorToString(Vector v) {

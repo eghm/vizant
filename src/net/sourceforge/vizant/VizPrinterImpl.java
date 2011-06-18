@@ -1,6 +1,7 @@
 package net.sourceforge.vizant;
 
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Vector;
 import java.util.Enumeration;
 
@@ -30,8 +31,10 @@ public class VizPrinterImpl implements VizPrinter {
     private IDTable idtable;
     private int indentLevel = 0;
     private final String indent;
+    private VizLogger vizLogger;
 
-    public VizPrinterImpl() {
+    public VizPrinterImpl(VizLogger vizLogger) {
+    	this.vizLogger = vizLogger;
 	attrMap = getDefaultAttrMap();
 	subgraphAttrMap = new Hashtable();
 	indent = "    ";
@@ -124,6 +127,7 @@ public class VizPrinterImpl implements VizPrinter {
      */
     protected void addAttributeStatement(Hashtable table,
 					 VizAttrStmt attrstmt) {
+    	vizLogger.debug("addAttributeStatement " + attrstmt.toString());
         VizASType type = attrstmt.getType();
         VizAttrStmt oldAttrstmt = 
             (VizAttrStmt)table.get(type);
@@ -144,11 +148,14 @@ public class VizPrinterImpl implements VizPrinter {
     }
 
     private String getQuotedId(String id) {
+//    	if (id == null) { throw new RuntimeException("null id in getQuoatedId");}
         return "\"" + escapeId(id) + "\"";
     }
 
     public void printAttrStmt(VizAttrStmt as) {
-        out.print(" [");
+    	StringBuilder sb = new StringBuilder();
+    	sb.append(" [");
+//        out.print(" [");
         Enumeration attrEnum = as.getAttributes();
         while (attrEnum.hasMoreElements()) {
 	    VizAttr attr = (VizAttr)attrEnum.nextElement();
@@ -158,13 +165,23 @@ public class VizPrinterImpl implements VizPrinter {
 	    // justification: \r \l \n
 	    // conversion: \N
 	    // \xT \xt \xD \xd \xf \xb \xx
-            out.print(getQuotedId(attr.getName()) + "=\""
+            sb.append(getQuotedId(attr.getName()) + "=\""
 		      + attr.getValue() + "\",");
+//            out.print(getQuotedId(attr.getName()) + "=\""
+//      		      + attr.getValue() + "\",");
         }
-        out.print("]");
+        sb.append("]");
+        vizLogger.debug("printAttrStmt " + sb.toString());
+        out.print(sb.toString());
     }
 
     public boolean printAttrIfExists(Hashtable map, VizASType type) {
+//    	vizLogger.debug("printAttrIfExists " + type);
+    	Enumeration keys = map.keys();
+    	while (keys.hasMoreElements()) {
+    		VizASType key = (VizASType) keys.nextElement();
+//			vizLogger.debug("key " + key + " value " + map.get(key).toString());
+		}
         if (map.get(type) != null) {
             printAttrStmt((VizAttrStmt)map.get(type));
             return true;
@@ -219,8 +236,10 @@ public class VizPrinterImpl implements VizPrinter {
                 if (targets.contains(target)) {
                     target.setProject(newp);
                     newp.appendTarget(target);
+                    vizLogger.debug("eraseNotContainsTargets adding target " + target + " to project" + newp);
                 }
             }
+            vizLogger.debug("eraseNotContainsTargets Keeping project" + newp.toString());
             newProjects.addElement(newp);
         }
         projects = newProjects;
@@ -276,7 +295,7 @@ public class VizPrinterImpl implements VizPrinter {
 
     public void print() {
         filterReferences();
-	idtable = createIDTable(projects);
+        idtable = createIDTable(projects);
 
         out.println("digraph " + getQuotedId(graphid) + " {");
         indentLevel++;
@@ -302,6 +321,7 @@ public class VizPrinterImpl implements VizPrinter {
     private void printProject(VizProject project, 
 			      Vector clusterRefs,
 			      int subgraphNum) {
+    	vizLogger.debug("printProject " + project + " subgraphNum " + subgraphNum);
 	if (0 < subgraphNum) {
 	    println("subgraph \""
 		    + (noCluster ? "" : "cluster:")
@@ -330,40 +350,50 @@ public class VizPrinterImpl implements VizPrinter {
 			     VizProject project,
 			     Vector clusterRefs,
 			     boolean isSubgraph) {
-	String id = idtable.getId(target);
-	print(getQuotedId(id));
-	
-	String label = target.getId();
-	label = ("".equals(label)) ? "(default)" : label;
-	if (isSubgraph && noCluster) {
-	    label = escapeId(project.getDir() + " " 
-			     + project.getFile())
-		+ "\\n" + escapeId(label);
-	    out.print(" [\"label\"=\"" + label + "\"]");
-	} else if (! id.equals(label)) {
-	    out.print(" [\"label\"=" + getQuotedId(label) + "]");
-	}
-	if (target.isDefault()) {
-	    printDefaultNodeAttributes(isSubgraph);
-	}
-	out.println(";");
-
-	Enumeration refs = target.getReferencesOut().elements();
-	while (refs.hasMoreElements()) {
-	    VizReference ref = (VizReference)refs.nextElement();
-	    if (ref.getType() == VizReference.ANT) {
-		clusterRefs.addElement(ref);
-	    } else {
-		String refid = idtable.getId(ref.getTo());
-		print(getQuotedId(id) + " -> " + getQuotedId(refid));
-		if (ref.getType() == VizReference.DEPENDS) {
-		    printAttrIfExists(attrMap, VizASType.EDGE_DEPENDS);
-		} else if (ref.getType() == VizReference.ANTCALL) {
-		    printAttrIfExists(attrMap, VizASType.EDGE_ANTCALL);
+    	vizLogger.debug("printTarget target " + target);
+		String id = idtable.getId(target);
+		print(getQuotedId(id));
+		
+		String label = target.getId();
+		label = ("".equals(label)) ? "(default)" : label;
+		vizLogger.debug("label = " + label);
+		if (isSubgraph && noCluster) {
+		    label = escapeId(project.getDir() + " " 
+				     + project.getFile())
+			+ "\\n" + escapeId(label);
+		    out.print(" [\"label\"=\"" + label + "\"]");
+		    vizLogger.debug("isSubgraph and noCluster label: " + label);
+		} else if (! id.equals(label)) {
+		    out.print(" [\"label\"=" + getQuotedId(label) + "]");
+		    vizLogger.debug("id not equal to label: " + label);
+		}
+		if (target.isDefault()) {
+		    vizLogger.debug("printTarget printing default target " + target + " subgraph?" + isSubgraph);		
+		    printDefaultNodeAttributes(isSubgraph);
 		}
 		out.println(";");
-	    }
-	}
+	
+		Enumeration refs = target.getReferencesOut().elements();
+		while (refs.hasMoreElements()) {
+		    VizReference ref = (VizReference)refs.nextElement();
+			vizLogger.debug("printTarget ref " + ref);
+		    if (ref.getType() == VizReference.ANT) {
+		    	clusterRefs.addElement(ref);
+		    } else {
+				String refid = idtable.getId(ref.getTo());
+				if (refid == null) {
+					vizLogger.debug("NULL REFID " + ref.getTo());
+				}
+				print(getQuotedId(id) + " -> " + getQuotedId(refid));
+				vizLogger.debug(getQuotedId(id) + " -> " + getQuotedId(refid));
+				if (ref.getType() == VizReference.DEPENDS) {
+				    printAttrIfExists(attrMap, VizASType.EDGE_DEPENDS);
+				} else if (ref.getType() == VizReference.ANTCALL) {
+				    printAttrIfExists(attrMap, VizASType.EDGE_ANTCALL);
+				}
+				out.println(";");
+		    }
+		}
     }
 
 
@@ -383,11 +413,18 @@ public class VizPrinterImpl implements VizPrinter {
      * replace string.
      */
     private String replace(String in, String before, String after) {
-        if (in.length() == 0)
+        
+        // guard statements
+        if (in==null || in.length() == 0) {
             return "";
-        if (before.length() == 0)
+        }
+        if (before==null || before.length() == 0) {
             return in;
-
+        }
+        if (after==null) {
+            after = "";
+        }
+        
         int start = 0;
         int end = -1;
         int len = before.length();
@@ -424,21 +461,23 @@ public class VizPrinterImpl implements VizPrinter {
 
 	    Enumeration projEnum = projects.elements();
 	    while (projEnum.hasMoreElements()) {
-		VizProject project = (VizProject)projEnum.nextElement();
-		Vector targetlist = project.getOrderedTargets();
-		Enumeration targetEnum = targetlist.elements();
-		while (targetEnum.hasMoreElements()) {
-		    VizTarget target = (VizTarget)targetEnum.nextElement();
-		    String label = target.getId();
-		    label = ("".equals(label)) ? "(default)" : label;
-		    String id = label;
-		    int idSuffixNum = 0;
-		    while (idSet.contains(id)) {
-			id = label + "-" + (++idSuffixNum);
-		    }
-		    idSet.addElement(id);
-		    result.put(target, id);
-		}
+			VizProject project = (VizProject)projEnum.nextElement();
+			vizLogger.debug("getIdTable project:" + project.toString());
+			Vector targetlist = project.getOrderedTargets();
+			Enumeration targetEnum = targetlist.elements();
+			while (targetEnum.hasMoreElements()) {
+			    VizTarget target = (VizTarget)targetEnum.nextElement();
+				vizLogger.debug("    getIdTable target:" + target.toString());
+			    String label = target.getId();
+			    label = ("".equals(label)) ? "(default)" : label;
+			    String id = label;
+			    int idSuffixNum = 0;
+			    while (idSet.contains(id)) {
+			    	id = label + "-" + (++idSuffixNum);
+			    }
+			    idSet.addElement(id);
+			    result.put(target, id);
+			}
 	    }
 	    return result;
 	}

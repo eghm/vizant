@@ -9,6 +9,7 @@ public class VizReference {
     public static final int DEPENDS = 0;
     public static final int ANTCALL = 1;
     public static final int ANT = 2;
+    public static final int MACRO = 3;
     
     private int type = DEPENDS;
     private VizTarget from = null;
@@ -48,8 +49,8 @@ public class VizReference {
             return false;
         if (getTo() == null && ref.getTo() != null) 
             return false;
-        return (getFrom().equals(ref.getFrom()) &&
-                getTo().equals(ref.getTo()));
+        return (getFrom().getId().equals(ref.getFrom().getId()) &&
+                getTo().getId().equals(ref.getTo().getId()));
     }
 
     public int hashCode() {

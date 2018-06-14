@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<project name="dot" basedir="." default="dot">
-   <target name="dot">
-      <exec executable="dot">
-         <arg line="-T${dot.format} ${build}/build.dot -o ${build}/out.${dot.format}" />
-      </exec>
-   </target>
-</project>

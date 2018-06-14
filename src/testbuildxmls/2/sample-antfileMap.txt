@@ -1,2 +1,0 @@
-\${sample-vizant.xml}=\java\workspace\vizant\src\testbuildxmls\2\import\sample-vizant-import.xml
-\sample-vizant-macro.xml=\java\workspace\vizant\src\testbuildxmls\2\import\sample-vizant-macro.xml
